@@ -31,6 +31,13 @@ Run this with:
 """
 
 import os
+import sys
+
+# Vercel's Python serverless runtime doesn't always guarantee that this
+# file's own directory (api/) is on sys.path, which would make
+# "from tools import ..." fail with an import error. Adding it
+# explicitly here fixes that regardless of how Vercel invokes this file.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import httpx
 from dotenv import load_dotenv
