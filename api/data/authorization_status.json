@@ -1,0 +1,57 @@
+[
+  {
+    "authorization_id": "AUTH-1001",
+    "patient_id": "10203",
+    "procedure": "Cardiac Surgery",
+    "procedure_ar": "جراحة القلب",
+    "status": "required_not_submitted",
+    "status_ar": "مطلوبة ولم يتم تقديمها",
+    "submitted_at": null,
+    "decision": null,
+    "decision_ar": null
+  },
+  {
+    "authorization_id": "AUTH-1002",
+    "patient_id": "10457",
+    "procedure": "MRI",
+    "procedure_ar": "أشعة الرنين المغناطيسي",
+    "status": "approved",
+    "status_ar": "تمت الموافقة",
+    "submitted_at": "2026-08-01T10:30:00Z",
+    "decision": "approved",
+    "decision_ar": "تمت الموافقة"
+  },
+  {
+    "authorization_id": "AUTH-1003",
+    "patient_id": "10891",
+    "procedure": "Cardiac Surgery",
+    "procedure_ar": "جراحة القلب",
+    "status": "approved",
+    "status_ar": "تمت الموافقة",
+    "submitted_at": "2026-07-28T09:15:00Z",
+    "decision": "approved",
+    "decision_ar": "تمت الموافقة"
+  },
+  {
+    "authorization_id": "AUTH-1004",
+    "patient_id": "11024",
+    "procedure": "MRI",
+    "procedure_ar": "أشعة الرنين المغناطيسي",
+    "status": "required_not_submitted",
+    "status_ar": "مطلوبة ولم يتم تقديمها",
+    "submitted_at": null,
+    "decision": null,
+    "decision_ar": null
+  },
+  {
+    "authorization_id": "AUTH-1005",
+    "patient_id": "11742",
+    "procedure": "Cardiac Surgery",
+    "procedure_ar": "جراحة القلب",
+    "status": "pending",
+    "status_ar": "قيد المراجعة",
+    "submitted_at": "2026-08-05T13:45:00Z",
+    "decision": null,
+    "decision_ar": null
+  }
+]

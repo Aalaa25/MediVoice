@@ -1,0 +1,14 @@
+# Never commit real secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Vercel
+.vercel/
+
+# OS junk
+.DS_Store

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<title>HealthVoice - Insurance Voice Assistant</title>
+<style>
+  /* Basic styling only — this is a prototype, not a design showcase */
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+    background: #f5f7fa;
+    color: #222;
+  }
+  h1 { text-align: center; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+
+  #startBtn {
+    display: block;
+    margin: 0 auto 20px auto;
+    padding: 14px 32px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+  }
+  #startBtn:disabled { background: #93c5fd; cursor: not-allowed; }
+  #stopBtn {
+    display: none;
+    margin: 0 auto 20px auto;
+    padding: 14px 32px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    background: #dc2626;
+    color: white;
+    cursor: pointer;
+  }
+
+  /* Status indicator badges, per the original architecture plan:
+     listening / thinking / speaking */
+  #status {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  .status-idle { color: #888; }
+  .status-listening { color: #16a34a; }
+  .status-thinking { color: #2563eb; }
+  .status-speaking { color: #9333ea; }
+
+  #transcript {
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+    min-height: 200px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  .msg { margin-bottom: 12px; line-height: 1.5; }
+  .msg.user { text-align: right; }
+  .msg.agent { text-align: right; color: #1d4ed8; }
+  .msg .label { font-weight: bold; font-size: 12px; color: #888; display: block; }
+
+  /* Small debug log showing tool calls, per the architecture plan's
+     "USER AUDIO -> TRANSCRIPTION -> TOOL CALL -> RESULT -> RESPONSE"
+     pipeline visualization */
+  #toolLog {
+    margin-top: 20px;
+    background: #111827;
+    color: #a5f3fc;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    direction: ltr;
+    text-align: left;
+  }
+</style>
+</head>
+<body>
+
+  <h1>🏥 HealthVoice</h1>
+  <div class="subtitle">Insurance Voice Assistant / مساعد التأمين الصوتي</div>
+
+  <button id="startBtn">🎙️ Start Conversation</button>
+  <button id="stopBtn">⏹️ End Conversation</button>
+
+  <div id="status" class="status-idle">Idle</div>
+
+  <div id="transcript"></div>
+
+  <div id="toolLog"></div>
+
+  <script>
+    // ---------------------------------------------------------------
+    // Configuration
+    // ---------------------------------------------------------------
+    // Where our backend API lives. On Vercel, both the frontend (this
+    // page, served from /) and the backend (served from /api/*) live on
+    // the SAME domain, so a relative path works both locally (if you
+    // serve this through the FastAPI/Vercel dev server) and in
+    // production. If you ever host the frontend and backend on
+    // different domains, change this to the full backend URL.
+    const BACKEND_URL = "/api";
+
+    // DOM elements we'll update as the conversation progresses
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const statusEl = document.getElementById("status");
+    const transcriptEl = document.getElementById("transcript");
+    const toolLogEl = document.getElementById("toolLog");
+
+    // These are set once the session starts, and needed to clean up
+    // properly when the conversation ends.
+    let peerConnection = null;
+    let dataChannel = null;
+    let localStream = null;
+
+    // ---------------------------------------------------------------
+    // Small UI helper functions
+    // ---------------------------------------------------------------
+
+    function setStatus(text, cssClass) {
+      statusEl.textContent = text;
+      statusEl.className = cssClass;
+    }
+
+    function addTranscriptLine(speaker, text) {
+      // speaker is either "user" or "agent"
+      const div = document.createElement("div");
+      div.className = "msg " + speaker;
+      const label = speaker === "user" ? "أنت" : "المساعد";
+      div.innerHTML = `<span class="label">${label}</span>${text}`;
+      transcriptEl.appendChild(div);
+      transcriptEl.scrollTop = transcriptEl.scrollHeight;
+    }
+
+    function logToolActivity(text) {
+      const line = document.createElement("div");
+      line.textContent = text;
+      toolLogEl.appendChild(line);
+      toolLogEl.scrollTop = toolLogEl.scrollHeight;
+    }
+
+    // ---------------------------------------------------------------
+    // Step 1: Get an ephemeral session token + config from our backend
+    // ---------------------------------------------------------------
+    // We never talk to OpenAI with our real API key from the browser.
+    // Our FastAPI /session endpoint does that server-side and gives us
+    // back a short-lived session (including a client_secret we use for
+    // the WebRTC handshake).
+
+    async function fetchRealtimeSession() {
+      const response = await fetch(`${BACKEND_URL}/session`);
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        throw new Error(
+          `Failed to create realtime session: ${errorBody.detail || response.statusText}`
+        );
+      }
+      return response.json();
+    }
+
+    // ---------------------------------------------------------------
+    // Step 2: Execute a tool call by hitting our FastAPI endpoints
+    // ---------------------------------------------------------------
+    // This is the bridge between "the agent wants to call a function"
+    // and "our actual backend logic". The tool names here MUST match
+    // the names defined in tool_schemas.py exactly.
+
+    async function executeToolCall(toolName, args) {
+      logToolActivity(`→ Calling tool: ${toolName}(${JSON.stringify(args)})`);
+
+      let result;
+
+      try {
+        if (toolName === "get_patient") {
+          const res = await fetch(`${BACKEND_URL}/patient/${encodeURIComponent(args.patient_id)}`);
+          result = await res.json();
+
+        } else if (toolName === "normalize_term") {
+          const res = await fetch(`${BACKEND_URL}/normalize`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: args.text, category: args.category }),
+          });
+          result = await res.json();
+
+        } else if (toolName === "check_coverage") {
+          const res = await fetch(`${BACKEND_URL}/coverage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              insurance_provider: args.insurance_provider,
+              plan: args.plan,
+              procedure: args.procedure,
+            }),
+          });
+          result = await res.json();
+
+        } else if (toolName === "get_authorization_status") {
+          const res = await fetch(`${BACKEND_URL}/authorization`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              patient_id: args.patient_id,
+              procedure: args.procedure,
+            }),
+          });
+          result = await res.json();
+
+        } else {
+          result = { error: `Unknown tool: ${toolName}` };
+        }
+      } catch (err) {
+        // If our backend is unreachable or returns something unexpected,
+        // we still want to hand SOMETHING back to the agent, rather than
+        // leaving it hanging.
+        result = { error: `Tool execution failed: ${err.message}` };
+      }
+
+      logToolActivity(`← Result: ${JSON.stringify(result)}`);
+      return result;
+    }
+
+    // ---------------------------------------------------------------
+    // Step 3: Start the WebRTC connection to OpenAI's Realtime API
+    // ---------------------------------------------------------------
+
+    async function startConversation() {
+      startBtn.disabled = true;
+      setStatus("Connecting...", "status-thinking");
+
+      try {
+        // 3a. Get ephemeral session info from our backend
+        // NOTE: the 2026 /v1/realtime/client_secrets response returns the
+        // ephemeral token directly under "value" (not nested under
+        // "client_secret" like the older /v1/realtime/sessions endpoint did).
+        const session = await fetchRealtimeSession();
+        const ephemeralKey = session.value;
+
+        // 3b. Ask for microphone access
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        // 3c. Set up the WebRTC peer connection
+        peerConnection = new RTCPeerConnection();
+
+        // Play back audio the agent sends us
+        const remoteAudio = document.createElement("audio");
+        remoteAudio.autoplay = true;
+        peerConnection.ontrack = (event) => {
+          remoteAudio.srcObject = event.streams[0];
+        };
+
+        // Send our microphone audio to OpenAI
+        localStream.getTracks().forEach((track) => {
+          peerConnection.addTrack(track, localStream);
+        });
+
+        // 3d. Data channel for events: transcripts, tool calls, status
+        dataChannel = peerConnection.createDataChannel("oai-events");
+        dataChannel.addEventListener("message", handleRealtimeEvent);
+
+        // 3e. Create the SDP offer and send it to OpenAI, using the
+        // ephemeral key (NOT our real API key) for auth.
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+
+        // NOTE: as of OpenAI's 2026 Realtime API (GA), the WebRTC SDP
+        // exchange happens at /v1/realtime/calls (not the old
+        // /v1/realtime?model=... endpoint). The model itself is already
+        // baked into the ephemeral session created by our backend, so we
+        // don't need to pass it again here.
+        const sdpResponse = await fetch(
+          "https://api.openai.com/v1/realtime/calls",
+          {
+            method: "POST",
+            body: offer.sdp,
+            headers: {
+              Authorization: `Bearer ${ephemeralKey}`,
+              "Content-Type": "application/sdp",
+            },
+          }
+        );
+
+        const answerSdp = await sdpResponse.text();
+        await peerConnection.setRemoteDescription({
+          type: "answer",
+          sdp: answerSdp,
+        });
+
+        setStatus("🟢 Listening...", "status-listening");
+        stopBtn.style.display = "inline-block";
+        startBtn.style.display = "none";
+
+      } catch (err) {
+        console.error(err);
+        setStatus("Error: " + err.message, "status-idle");
+        startBtn.disabled = false;
+      }
+    }
+
+    // ---------------------------------------------------------------
+    // Step 4: Handle events coming back from the Realtime API over the
+    // data channel — transcripts, tool call requests, speaking status
+    // ---------------------------------------------------------------
+
+    async function handleRealtimeEvent(event) {
+      const data = JSON.parse(event.data);
+
+      // The exact event type names below follow OpenAI's Realtime API
+      // event schema. If OpenAI changes these names in future API
+      // versions, check the Playground's event log to confirm.
+
+      switch (data.type) {
+
+        case "input_audio_buffer.speech_started":
+          setStatus("🟢 Listening...", "status-listening");
+          break;
+
+        case "response.created":
+          setStatus("🔵 Thinking...", "status-thinking");
+          break;
+
+        case "response.audio.delta":
+          setStatus("🟣 Speaking...", "status-speaking");
+          break;
+
+        // Final transcript of what the USER said
+        case "conversation.item.input_audio_transcription.completed":
+          if (data.transcript) {
+            addTranscriptLine("user", data.transcript);
+          }
+          break;
+
+        // Final transcript of what the AGENT said
+        case "response.audio_transcript.done":
+          if (data.transcript) {
+            addTranscriptLine("agent", data.transcript);
+          }
+          break;
+
+        // The agent wants to call one of our tools
+        case "response.function_call_arguments.done": {
+          const toolName = data.name;
+          const args = JSON.parse(data.arguments || "{}");
+          const callId = data.call_id;
+
+          const result = await executeToolCall(toolName, args);
+
+          // Send the tool result back to the Realtime API so the agent
+          // can use it to continue the conversation
+          dataChannel.send(JSON.stringify({
+            type: "conversation.item.create",
+            item: {
+              type: "function_call_output",
+              call_id: callId,
+              output: JSON.stringify(result),
+            },
+          }));
+
+          // Ask the agent to continue/respond now that it has the data
+          dataChannel.send(JSON.stringify({ type: "response.create" }));
+          break;
+        }
+
+        case "response.done":
+          setStatus("🟢 Listening...", "status-listening");
+          break;
+
+        default:
+          // Uncomment while debugging to see ALL events:
+          // console.log("event:", data.type, data);
+          break;
+      }
+    }
+
+    // ---------------------------------------------------------------
+    // Step 5: Clean up when the user ends the conversation
+    // ---------------------------------------------------------------
+
+    function stopConversation() {
+      if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+      }
+      if (localStream) {
+        localStream.getTracks().forEach((track) => track.stop());
+        localStream = null;
+      }
+      setStatus("Idle", "status-idle");
+      stopBtn.style.display = "none";
+      startBtn.style.display = "inline-block";
+      startBtn.disabled = false;
+    }
+
+    startBtn.addEventListener("click", startConversation);
+    stopBtn.addEventListener("click", stopConversation);
+  </script>
+
+</body>
+</html>

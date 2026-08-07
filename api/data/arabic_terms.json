@@ -1,0 +1,89 @@
+{
+  "procedures": [
+    {
+      "canonical": "Cardiac Surgery",
+      "ar": "جراحة القلب",
+      "variants": [
+        "عملية القلب",
+        "جراحة قلب",
+        "عملية قلب",
+        "عملية قلب مفتوح"
+      ]
+    },
+    {
+      "canonical": "MRI",
+      "ar": "أشعة الرنين المغناطيسي",
+      "variants": [
+        "رنين مغناطيسي",
+        "أشعة رنين",
+        "الرنين",
+        "MRI"
+      ]
+    },
+    {
+      "canonical": "Knee Replacement",
+      "ar": "استبدال مفصل الركبة",
+      "variants": [
+        "عملية الركبة",
+        "تغيير مفصل الركبة",
+        "استبدال الركبة",
+        "مفصل الركبة"
+      ]
+    }
+  ],
+  "insurance_providers": [
+    {
+      "canonical": "Bupa",
+      "ar": "بوبا",
+      "variants": [
+        "Bupa",
+        "بوبا"
+      ]
+    },
+    {
+      "canonical": "AXA",
+      "ar": "أكسا",
+      "variants": [
+        "AXA",
+        "أكسا"
+      ]
+    },
+    {
+      "canonical": "Cigna",
+      "ar": "سيجنا",
+      "variants": [
+        "Cigna",
+        "سيجنا"
+      ]
+    }
+  ],
+  "common_intents": [
+    {
+      "intent": "check_coverage",
+      "ar": "الاستعلام عن التغطية",
+      "examples": [
+        "هل التأمين يغطي العملية؟",
+        "هل العملية مغطاة؟",
+        "التأمين هيغطي كام؟"
+      ]
+    },
+    {
+      "intent": "check_authorization",
+      "ar": "الاستعلام عن الموافقة المسبقة",
+      "examples": [
+        "هل محتاجة موافقة مسبقة؟",
+        "هل لازم أعمل authorization؟",
+        "الموافقة المسبقة مطلوبة؟"
+      ]
+    },
+    {
+      "intent": "authorization_status",
+      "ar": "متابعة طلب الموافقة",
+      "examples": [
+        "الموافقة وصلت لفين؟",
+        "هل طلب الموافقة اتوافق عليه؟",
+        "إيه حالة الـauthorization؟"
+      ]
+    }
+  ]
+}
