@@ -19,33 +19,26 @@
   h1 { text-align: center; }
   .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
 
-  #startBtn {
-    display: block;
-    margin: 0 auto 20px auto;
+  #buttonRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 56px;
+    margin-bottom: 20px;
+  }
+  .voiceBtn {
     padding: 14px 32px;
     font-size: 16px;
     border: none;
     border-radius: 30px;
-    background: #2563eb;
     color: white;
     cursor: pointer;
     width: 100%;
     max-width: 320px;
   }
+  #startBtn { background: #2563eb; }
   #startBtn:disabled { background: #93c5fd; cursor: not-allowed; }
-  #stopBtn {
-    display: none;
-    margin: 0 auto 20px auto;
-    padding: 14px 32px;
-    font-size: 16px;
-    border: none;
-    border-radius: 30px;
-    background: #dc2626;
-    color: white;
-    cursor: pointer;
-    width: 100%;
-    max-width: 320px;
-  }
+  #stopBtn { background: #dc2626; display: none; }
 
   /* Status indicator badges, per the original architecture plan:
      listening / thinking / speaking */
@@ -116,8 +109,10 @@
   <h1>🏥 HealthVoice</h1>
   <div class="subtitle">Insurance Voice Assistant / مساعد التأمين الصوتي</div>
 
-  <button id="startBtn">🎙️ Start Conversation</button>
-  <button id="stopBtn">⏹️ End Conversation</button>
+  <div id="buttonRow">
+    <button id="startBtn" class="voiceBtn">🎙️ Start Conversation</button>
+    <button id="stopBtn" class="voiceBtn">⏹️ End Conversation</button>
+  </div>
 
   <div id="status" class="status-idle">Idle</div>
 
