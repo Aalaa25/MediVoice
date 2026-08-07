@@ -119,5 +119,49 @@
     "submitted_at": "2026-08-06T14:10:00Z",
     "decision": null,
     "decision_ar": null
+  },
+  {
+    "authorization_id": "AUTH-1012",
+    "patient_id": "10457",
+    "procedure": "Cataract Surgery",
+    "procedure_ar": "جراحة الماء الأبيض",
+    "status": "approved",
+    "status_ar": "تمت الموافقة",
+    "submitted_at": "2026-07-25T10:00:00Z",
+    "decision": "approved",
+    "decision_ar": "تمت الموافقة"
+  },
+  {
+    "authorization_id": "AUTH-1013",
+    "patient_id": "11376",
+    "procedure": "Dialysis",
+    "procedure_ar": "الغسيل الكلوي",
+    "status": "approved",
+    "status_ar": "تمت الموافقة",
+    "submitted_at": "2026-06-01T09:00:00Z",
+    "decision": "approved",
+    "decision_ar": "تمت الموافقة"
+  },
+  {
+    "authorization_id": "AUTH-1014",
+    "patient_id": "12763",
+    "procedure": "Chemotherapy",
+    "procedure_ar": "العلاج الكيميائي",
+    "status": "pending",
+    "status_ar": "قيد المراجعة",
+    "submitted_at": "2026-08-04T12:00:00Z",
+    "decision": null,
+    "decision_ar": null
+  },
+  {
+    "authorization_id": "AUTH-1015",
+    "patient_id": "13109",
+    "procedure": "Dental Surgery",
+    "procedure_ar": "جراحة الأسنان",
+    "status": "required_not_submitted",
+    "status_ar": "مطلوبة ولم يتم تقديمها",
+    "submitted_at": null,
+    "decision": null,
+    "decision_ar": null
   }
 ]
