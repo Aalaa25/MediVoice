@@ -2,9 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>HealthVoice - Insurance Voice Assistant</title>
 <style>
   /* Basic styling only — this is a prototype, not a design showcase */
+  * { box-sizing: border-box; }
+
   body {
     font-family: "Segoe UI", Tahoma, Arial, sans-serif;
     max-width: 600px;
@@ -26,6 +29,8 @@
     background: #2563eb;
     color: white;
     cursor: pointer;
+    width: 100%;
+    max-width: 320px;
   }
   #startBtn:disabled { background: #93c5fd; cursor: not-allowed; }
   #stopBtn {
@@ -38,6 +43,8 @@
     background: #dc2626;
     color: white;
     cursor: pointer;
+    width: 100%;
+    max-width: 320px;
   }
 
   /* Status indicator badges, per the original architecture plan:
@@ -59,6 +66,8 @@
     padding: 16px;
     min-height: 200px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   .msg { margin-bottom: 12px; line-height: 1.5; }
   .msg.user { text-align: right; }
@@ -78,8 +87,27 @@
     border-radius: 8px;
     max-height: 200px;
     overflow-y: auto;
+    overflow-x: hidden;
+    word-break: break-word;
     direction: ltr;
     text-align: left;
+  }
+
+  /* Mobile screens: tighten spacing and shrink text a bit so nothing
+     feels cramped or forces horizontal scrolling on small phones */
+  @media (max-width: 480px) {
+    body {
+      margin: 16px auto;
+      padding: 0 12px;
+    }
+    h1 { font-size: 22px; }
+    .subtitle { font-size: 13px; margin-bottom: 20px; }
+    #startBtn, #stopBtn {
+      padding: 12px 20px;
+      font-size: 15px;
+    }
+    #transcript { padding: 12px; min-height: 150px; }
+    #toolLog { font-size: 11px; max-height: 150px; }
   }
 </style>
 </head>
