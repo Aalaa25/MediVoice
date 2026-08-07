@@ -118,5 +118,77 @@
     "plan_ar": "فضي",
     "preferred_language": "English",
     "phone": "+201000000010"
+  },
+  {
+    "patient_id": "13560",
+    "name": "Mona Fawzy",
+    "name_ar": "منى فوزي",
+    "date_of_birth": "1980-05-11",
+    "insurance_provider": "AXA",
+    "insurance_provider_ar": "أكسا",
+    "plan": "Premium",
+    "plan_ar": "مميز",
+    "preferred_language": "Arabic",
+    "phone": "+201000000011"
+  },
+  {
+    "patient_id": "13998",
+    "name": "Hossam Zaki",
+    "name_ar": "حسام زكي",
+    "date_of_birth": "1993-08-30",
+    "insurance_provider": "Cigna",
+    "insurance_provider_ar": "سيجنا",
+    "plan": "Basic",
+    "plan_ar": "أساسي",
+    "preferred_language": "English",
+    "phone": "+201000000012"
+  },
+  {
+    "patient_id": "14321",
+    "name": "Rania Kamal",
+    "name_ar": "رانيا كمال",
+    "date_of_birth": "1998-02-19",
+    "insurance_provider": "Bupa",
+    "insurance_provider_ar": "بوبا",
+    "plan": "Gold",
+    "plan_ar": "ذهبي",
+    "preferred_language": "Arabic",
+    "phone": "+201000000013"
+  },
+  {
+    "patient_id": "14789",
+    "name": "Sherif Anwar",
+    "name_ar": "شريف أنور",
+    "date_of_birth": "1975-11-02",
+    "insurance_provider": "AXA",
+    "insurance_provider_ar": "أكسا",
+    "plan": "Basic",
+    "plan_ar": "أساسي",
+    "preferred_language": "Arabic",
+    "phone": "+201000000014"
+  },
+  {
+    "patient_id": "15102",
+    "name": "Dina Salah",
+    "name_ar": "دينا صلاح",
+    "date_of_birth": "1996-09-07",
+    "insurance_provider": "Cigna",
+    "insurance_provider_ar": "سيجنا",
+    "plan": "Gold",
+    "plan_ar": "ذهبي",
+    "preferred_language": "English",
+    "phone": "+201000000015"
+  },
+  {
+    "patient_id": "15488",
+    "name": "Ahmed Gaber",
+    "name_ar": "أحمد جابر",
+    "date_of_birth": "1965-01-24",
+    "insurance_provider": "Bupa",
+    "insurance_provider_ar": "بوبا",
+    "plan": "Silver",
+    "plan_ar": "فضي",
+    "preferred_language": "Arabic",
+    "phone": "+201000000016"
   }
 ]

@@ -53,5 +53,71 @@
     "submitted_at": "2026-08-05T13:45:00Z",
     "decision": null,
     "decision_ar": null
+  },
+  {
+    "authorization_id": "AUTH-1006",
+    "patient_id": "13560",
+    "procedure": "Physical Therapy",
+    "procedure_ar": "العلاج الطبيعي",
+    "status": "approved",
+    "status_ar": "تمت الموافقة",
+    "submitted_at": "2026-07-20T09:00:00Z",
+    "decision": "approved",
+    "decision_ar": "تمت الموافقة"
+  },
+  {
+    "authorization_id": "AUTH-1007",
+    "patient_id": "13998",
+    "procedure": "Cardiac Surgery",
+    "procedure_ar": "جراحة القلب",
+    "status": "required_not_submitted",
+    "status_ar": "مطلوبة ولم يتم تقديمها",
+    "submitted_at": null,
+    "decision": null,
+    "decision_ar": null
+  },
+  {
+    "authorization_id": "AUTH-1008",
+    "patient_id": "14321",
+    "procedure": "Knee Replacement",
+    "procedure_ar": "استبدال مفصل الركبة",
+    "status": "pending",
+    "status_ar": "قيد المراجعة",
+    "submitted_at": "2026-08-03T11:20:00Z",
+    "decision": null,
+    "decision_ar": null
+  },
+  {
+    "authorization_id": "AUTH-1009",
+    "patient_id": "14789",
+    "procedure": "MRI",
+    "procedure_ar": "أشعة الرنين المغناطيسي",
+    "status": "required_not_submitted",
+    "status_ar": "مطلوبة ولم يتم تقديمها",
+    "submitted_at": null,
+    "decision": null,
+    "decision_ar": null
+  },
+  {
+    "authorization_id": "AUTH-1010",
+    "patient_id": "15102",
+    "procedure": "Physical Therapy",
+    "procedure_ar": "العلاج الطبيعي",
+    "status": "approved",
+    "status_ar": "تمت الموافقة",
+    "submitted_at": "2026-07-15T08:30:00Z",
+    "decision": "approved",
+    "decision_ar": "تمت الموافقة"
+  },
+  {
+    "authorization_id": "AUTH-1011",
+    "patient_id": "15488",
+    "procedure": "Cardiac Surgery",
+    "procedure_ar": "جراحة القلب",
+    "status": "pending",
+    "status_ar": "قيد المراجعة",
+    "submitted_at": "2026-08-06T14:10:00Z",
+    "decision": null,
+    "decision_ar": null
   }
 ]
